@@ -1,0 +1,3105 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 0,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Overall",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Total of inventories Github repositories from applications running in the cluster.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Github Repositories",
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 1
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "count(\n  sum by (repo) (\n    max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n      kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\"}\n      )\n    and on(exported_namespace, name, container_name)\n    (\n      (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n    )\n    and on(exported_namespace, name, container_name)\n    (\n      (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n    )\n  )\n)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Repos",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Number of namespaces that contains inventoried applications.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Kubernetes Namespaces",
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 1
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "count(\n  sum by (exported_namespace) (\n    max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n      kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\"}\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n      )\n    )\n  )",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Namespaces",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Inventoried Pods.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Pods",
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 6,
+        "y": 1
+      },
+      "id": 4,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "count(\n  sum by (name) (\n    max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n      kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\"}\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n      )\n    )\n  )",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Inv. Pods",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Percentage of inventoried pods",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "max": 1,
+          "min": 0,
+          "noValue": "0",
+          "thresholds": {
+            "mode": "percentage",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 70
+              },
+              {
+                "color": "green",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 9,
+        "y": 1
+      },
+      "id": 11,
+      "options": {
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto"
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "count(\n  sum by (name) (\n    max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n      kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\"}\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n      )\n    )\n  )\n  / \nsum(kube_pod_info)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Inv. Pods (%)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Number of inventoried containers.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Containers",
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 12,
+        "y": 1
+      },
+      "id": 5,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "count(\n  sum by (container_name) (\n    max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n      kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\"}\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n      )\n    )\n  )",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Containers",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${datasource}"
+      },
+      "description": "Inventoried applications that NOT trigger alerts.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "displayName": "Silenced Applications",
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 15,
+        "y": 1
+      },
+      "id": 6,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "value",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "editorMode": "code",
+          "expr": "max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n  count(kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=\"true\"}))",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Silenced",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 13,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Total of Pods in the cluster.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Pod in the cluster",
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 6
+          },
+          "id": 17,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(kube_pod_info)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Pods (Total)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Inventoried Pods.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Pods",
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 3,
+            "y": 6
+          },
+          "id": 20,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(\n  sum by (name) (\n    max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n      kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\"}\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n      )\n    )\n  )",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Inv. Pods",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Percentage of inventoried pods",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "max": 1,
+              "min": 0,
+              "noValue": "0",
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  },
+                  {
+                    "color": "yellow",
+                    "value": 70
+                  },
+                  {
+                    "color": "green",
+                    "value": 100
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 6,
+            "y": 6
+          },
+          "id": 21,
+          "options": {
+            "minVizHeight": 75,
+            "minVizWidth": 75,
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "sizing": "auto"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(\n  sum by (name) (\n    max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n      kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\"}\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n      )\n      and on(exported_namespace, name, container_name)\n      (\n        (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n      )\n    )\n  )\n  / \nsum(kube_pod_info)",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Inv. Pods (%)",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "description": "Number of Pods that were not inventoried.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Not Inventoried Pods",
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 9,
+            "y": 6
+          },
+          "id": 16,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "expr": "count(kube_pod_info\nunless on(namespace, pod)\nlabel_replace(\n  label_replace(\n    kube_inventory_pod_versions_to_latest_release,\n    \"pod\", \"$1\", \"name\", \"(.*)\"\n  ),\n  \"namespace\", \"$1\", \"exported_namespace\", \"(.*)\"\n))",
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Not Inv. Pods",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "footer": {
+                  "reducers": []
+                },
+                "inspect": false,
+                "wrapText": true
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Namespace"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 173
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Pod"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 329
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Container"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 250
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 62
+          },
+          "id": 15,
+          "options": {
+            "cellHeight": "sm",
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": true,
+                "displayName": "Namespace"
+              }
+            ]
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "kube_pod_info\nunless on(namespace, pod)\nlabel_replace(\n  label_replace(\n    kube_inventory_pod_versions_to_latest_release,\n    \"pod\", \"$1\", \"name\", \"(.*)\"\n  ),\n  \"namespace\", \"$1\", \"exported_namespace\", \"(.*)\"\n)",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Not Inventoried Pods",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "Value": true,
+                  "__name__": true,
+                  "created_by_kind": true,
+                  "created_by_name": true,
+                  "endpoint": true,
+                  "host_ip": true,
+                  "host_network": true,
+                  "instance": true,
+                  "job": true,
+                  "node": true,
+                  "pod_ip": true,
+                  "priority_class": true,
+                  "service": true,
+                  "uid": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Time": 0,
+                  "Value": 14,
+                  "__name__": 1,
+                  "container": 17,
+                  "created_by_kind": 2,
+                  "created_by_name": 11,
+                  "endpoint": 3,
+                  "host_ip": 4,
+                  "host_network": 5,
+                  "instance": 6,
+                  "job": 7,
+                  "namespace": 15,
+                  "node": 8,
+                  "pod": 16,
+                  "pod_ip": 9,
+                  "priority_class": 13,
+                  "service": 10,
+                  "uid": 12
+                },
+                "renameByName": {
+                  "container": "Container",
+                  "created_by_name": "",
+                  "namespace": "Namespace",
+                  "pod": "Pod"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Namespace"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Coverage",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 10,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Number of outdated pods",
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 0,
+            "y": 7
+          },
+          "id": 12,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(\n  max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n    kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"} > $alert_outdated_pods\n    )\n  )",
+              "format": "time_series",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Outdated Pods",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Number of staled apps",
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 3,
+            "y": 7
+          },
+          "id": 25,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(\n  max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n    kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"}\n    )\n    and on(exported_namespace, name, container_name)\n    (\n      ((time() - kube_inventory_pod_current_release_timestamp) > ($alert_stale_applications * 24 * 3600))\n    )\n    and on(exported_namespace, name, container_name)\n    (\n      (time() - kube_inventory_pod_latest_release_timestamp) < ($alert_abandoned_applications * 24 * 3600)\n    )\n  )",
+              "format": "time_series",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Staled Apps",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "displayName": "Number of staled apps",
+              "mappings": [],
+              "noValue": "0",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 6,
+            "y": 7
+          },
+          "id": 26,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "value",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(\n  max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n    ((time() - kube_inventory_pod_latest_release_timestamp{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"}) > ($alert_abandoned_applications * 24 * 3600))\n    )\n  )",
+              "format": "time_series",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Abandoned Apps",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "max": 1,
+              "min": 0,
+              "noValue": "0",
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 40
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 9,
+            "y": 7
+          },
+          "id": 27,
+          "options": {
+            "minVizHeight": 75,
+            "minVizWidth": 75,
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "sizing": "auto"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(\n  max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n    kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"} > $alert_outdated_pods\n    )\n  )\n  / sum(kube_pod_info)",
+              "format": "time_series",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Outdated Pods",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "max": 1,
+              "min": 0,
+              "noValue": "0",
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 40
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 12,
+            "y": 7
+          },
+          "id": 28,
+          "options": {
+            "minVizHeight": 75,
+            "minVizWidth": 75,
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "sizing": "auto"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(\n  max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n    kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"}\n    )\n    and on(exported_namespace, name, container_name)\n    (\n      ((time() - kube_inventory_pod_current_release_timestamp) > ($alert_stale_applications * 24 * 3600))\n    )\n    and on(exported_namespace, name, container_name)\n    (\n      (time() - kube_inventory_pod_latest_release_timestamp) < ($alert_abandoned_applications * 24 * 3600)\n    )\n  )\n  / sum(kube_pod_info)",
+              "format": "time_series",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Staled Apps",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "max": 1,
+              "min": 0,
+              "noValue": "0",
+              "thresholds": {
+                "mode": "percentage",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 40
+                  },
+                  {
+                    "color": "red",
+                    "value": 60
+                  }
+                ]
+              },
+              "unit": "percentunit"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 3,
+            "x": 15,
+            "y": 7
+          },
+          "id": 29,
+          "options": {
+            "minVizHeight": 75,
+            "minVizWidth": 75,
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true,
+            "sizing": "auto"
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count(\n  max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n    ((time() - kube_inventory_pod_latest_release_timestamp{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"}) > ($alert_abandoned_applications * 24 * 3600))\n    )\n  )\n  / sum(kube_pod_info)",
+              "format": "time_series",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Abandoned Apps",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "footer": {
+                  "reducers": []
+                },
+                "inspect": false,
+                "wrapText": true
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Repo"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 136
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Namespace"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Pod"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 157
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Container"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 111
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 118
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Date"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 108
+                  },
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 125
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Silenced"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 97
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Date"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr. Rl. Age"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 107
+                  },
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Age"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 102
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Vs to Lt"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Ns"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 137
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 23
+          },
+          "id": 24,
+          "options": {
+            "cellHeight": "sm",
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "Namespace"
+              }
+            ]
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n  kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"} > $alert_outdated_pods\n  )",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Outdated Pods",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Cr. Rl. Age",
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "current_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Lt. Rl. Age",
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "latest_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "container_name": false,
+                  "current_release_date": false
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Cr. Rl. Age": 7,
+                  "Lt. Rl. Age": 10,
+                  "Time": 0,
+                  "Value": 12,
+                  "container_name": 4,
+                  "current_release_date": 6,
+                  "current_release_name": 5,
+                  "exported_namespace": 2,
+                  "latest_release_date": 9,
+                  "latest_release_name": 8,
+                  "name": 3,
+                  "repo": 1,
+                  "silenced": 11
+                },
+                "renameByName": {
+                  "Last": "Cr. Rl. Age",
+                  "Lt. Rl. Age": "",
+                  "Value": "Vs to Lt",
+                  "container_name": "Container",
+                  "current_release_date": "Cr Rl Date",
+                  "current_release_name": "Cr Rl Name",
+                  "exported_namespace": "Ns",
+                  "latest_release_date": "Lt. Rl. Date",
+                  "latest_release_name": "Lt. Rl. Name",
+                  "name": "Pod",
+                  "repo": "Repo",
+                  "silenced": "Silenced"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Repo"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "footer": {
+                  "reducers": []
+                },
+                "inspect": false,
+                "wrapText": true
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Repo"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 136
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Namespace"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Pod"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 157
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Container"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 111
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 118
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Date"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 108
+                  },
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 125
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Silenced"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 97
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Date"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr. Rl. Age"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 107
+                  },
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Age"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 102
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Vs to Lt"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Ns"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 137
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 31
+          },
+          "id": 30,
+          "options": {
+            "cellHeight": "sm",
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "Namespace"
+              }
+            ]
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n  kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"}\n  )\n  and on(exported_namespace, name, container_name)\n  (\n    ((time() - kube_inventory_pod_current_release_timestamp) > ($alert_stale_applications * 24 * 3600))\n  )\n  and on(exported_namespace, name, container_name)\n  (\n    (time() - kube_inventory_pod_latest_release_timestamp) < ($alert_abandoned_applications * 24 * 3600)\n  )",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Staled Apps",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Cr. Rl. Age",
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "current_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Lt. Rl. Age",
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "latest_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "container_name": false,
+                  "current_release_date": false
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Cr. Rl. Age": 7,
+                  "Lt. Rl. Age": 10,
+                  "Time": 0,
+                  "Value": 12,
+                  "container_name": 4,
+                  "current_release_date": 6,
+                  "current_release_name": 5,
+                  "exported_namespace": 2,
+                  "latest_release_date": 9,
+                  "latest_release_name": 8,
+                  "name": 3,
+                  "repo": 1,
+                  "silenced": 11
+                },
+                "renameByName": {
+                  "Last": "Cr. Rl. Age",
+                  "Lt. Rl. Age": "",
+                  "Value": "Vs to Lt",
+                  "container_name": "Container",
+                  "current_release_date": "Cr Rl Date",
+                  "current_release_name": "Cr Rl Name",
+                  "exported_namespace": "Ns",
+                  "latest_release_date": "Lt. Rl. Date",
+                  "latest_release_name": "Lt. Rl. Name",
+                  "name": "Pod",
+                  "repo": "Repo",
+                  "silenced": "Silenced"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Repo"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "footer": {
+                  "reducers": []
+                },
+                "inspect": false,
+                "wrapText": true
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Repo"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 136
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Namespace"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Pod"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 157
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Container"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 111
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 118
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Date"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 108
+                  },
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 125
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Silenced"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 97
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Date"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 120
+                  },
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr. Rl. Age"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 107
+                  },
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt. Rl. Age"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 102
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Vs to Lt"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Ns"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 137
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 24,
+            "x": 0,
+            "y": 39
+          },
+          "id": 31,
+          "options": {
+            "cellHeight": "sm",
+            "showHeader": true,
+            "sortBy": [
+              {
+                "desc": false,
+                "displayName": "Namespace"
+              }
+            ]
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n  kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"}\n  )\n  and on(exported_namespace, name, container_name)\n  (\n    (time() - kube_inventory_pod_latest_release_timestamp) > ($alert_abandoned_applications * 24 * 3600)\n  )\n  ",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Abandoned Apps",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Cr. Rl. Age",
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "current_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "alias": "Lt. Rl. Age",
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "latest_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "container_name": false,
+                  "current_release_date": false
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Cr. Rl. Age": 7,
+                  "Lt. Rl. Age": 10,
+                  "Time": 0,
+                  "Value": 12,
+                  "container_name": 4,
+                  "current_release_date": 6,
+                  "current_release_name": 5,
+                  "exported_namespace": 2,
+                  "latest_release_date": 9,
+                  "latest_release_name": 8,
+                  "name": 3,
+                  "repo": 1,
+                  "silenced": 11
+                },
+                "renameByName": {
+                  "Last": "Cr. Rl. Age",
+                  "Lt. Rl. Age": "",
+                  "Value": "Vs to Lt",
+                  "container_name": "Container",
+                  "current_release_date": "Cr Rl Date",
+                  "current_release_name": "Cr Rl Name",
+                  "exported_namespace": "Ns",
+                  "latest_release_date": "Lt. Rl. Date",
+                  "latest_release_name": "Lt. Rl. Name",
+                  "name": "Pod",
+                  "repo": "Repo",
+                  "silenced": "Silenced"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Repo"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Alerts",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 7,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${datasource}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "align": "auto",
+                "cellOptions": {
+                  "type": "auto"
+                },
+                "filterable": true,
+                "footer": {
+                  "reducers": []
+                },
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Repo"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 141
+                  },
+                  {
+                    "id": "custom.wrapText",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Ns"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 108
+                  },
+                  {
+                    "id": "custom.wrapHeaderText",
+                    "value": true
+                  },
+                  {
+                    "id": "custom.wrapHeaderText",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Pod"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 158
+                  },
+                  {
+                    "id": "custom.wrapText",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Container"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 141
+                  },
+                  {
+                    "id": "custom.wrapText",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Silenced"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 96
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Ns"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 114
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt Rl Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 108
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Date"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 110
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt Rl Date"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "time: YYYY-MM-DD"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 107
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Age"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 105
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Lt Rl Age"
+                },
+                "properties": [
+                  {
+                    "id": "unit",
+                    "value": "dateTimeFromNow"
+                  },
+                  {
+                    "id": "custom.width",
+                    "value": 103
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Vs to Lt"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 100
+                  },
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Silenced"
+                },
+                "properties": [
+                  {
+                    "id": "custom.align",
+                    "value": "center"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Cr Rl Name"
+                },
+                "properties": [
+                  {
+                    "id": "custom.width",
+                    "value": 145
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 12,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
+          "id": 8,
+          "options": {
+            "cellHeight": "sm",
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "12.3.0",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${datasource}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "max by (repo, exported_namespace, name, container_name, silenced, current_release_name, latest_release_date, latest_release_name, current_release_date) (\n  kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\", exported_namespace=~\"$namespace\", name=~\"$pod\", container_name=~\"$container\", silenced=~\"$silenced\"}\n  )\nand on(exported_namespace, name, container_name)\n(\n  (time() - kube_inventory_pod_current_release_timestamp) > ($current_release_age * 24 * 3600)\n)\nand on(exported_namespace, name, container_name)\n(\n  (time() - kube_inventory_pod_latest_release_timestamp) > ($latest_release_age * 24 * 3600)\n)",
+              "format": "table",
+              "instant": true,
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "title": "Inventoried Applications",
+          "transformations": [
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "current_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "calculateField",
+              "options": {
+                "mode": "reduceRow",
+                "reduce": {
+                  "include": [
+                    "latest_release_date"
+                  ],
+                  "reducer": "last"
+                }
+              }
+            },
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Time": true,
+                  "__name__": true,
+                  "container": true,
+                  "container_name": false,
+                  "endpoint": true,
+                  "instance": true,
+                  "job": true,
+                  "name": false,
+                  "namespace": true,
+                  "pod": true
+                },
+                "includeByName": {},
+                "indexByName": {
+                  "Last": 14,
+                  "Last 2": 17,
+                  "Time": 0,
+                  "Value": 19,
+                  "__name__": 1,
+                  "container": 2,
+                  "container_name": 11,
+                  "current_release_date": 13,
+                  "current_release_name": 12,
+                  "endpoint": 3,
+                  "exported_namespace": 9,
+                  "instance": 4,
+                  "job": 5,
+                  "latest_release_date": 16,
+                  "latest_release_name": 15,
+                  "name": 10,
+                  "namespace": 6,
+                  "pod": 7,
+                  "repo": 8,
+                  "silenced": 18
+                },
+                "renameByName": {
+                  "Last": "Cr Rl Age",
+                  "Last 2": "Lt Rl Age",
+                  "Value": "Vs to Lt",
+                  "container": "",
+                  "container_name": "Container",
+                  "current_release_date": "Cr Rl Date",
+                  "current_release_name": "Cr Rl Name",
+                  "exported_namespace": "Ns",
+                  "latest_release_date": "Lt Rl Date",
+                  "latest_release_name": "Lt Rl Name",
+                  "name": "Pod",
+                  "repo": "Repo",
+                  "silenced": "Silenced"
+                }
+              }
+            },
+            {
+              "id": "sortBy",
+              "options": {
+                "fields": {},
+                "sort": [
+                  {
+                    "field": "Repo"
+                  }
+                ]
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "title": "Details",
+      "type": "row"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "5",
+          "value": "5"
+        },
+        "description": "Number of releases that triggers the alert OutdatedKubeInventoryPods.",
+        "hide": 2,
+        "label": "Outdated Pods",
+        "name": "alert_outdated_pods",
+        "query": "5",
+        "skipUrlSync": true,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "text": "90",
+          "value": "90"
+        },
+        "description": "Number of days that triggers the alert StaleApplicationRelease.",
+        "hide": 2,
+        "label": "Stale Applications",
+        "name": "alert_stale_applications",
+        "query": "90",
+        "skipUrlSync": true,
+        "type": "constant"
+      },
+      {
+        "current": {
+          "text": "90",
+          "value": "90"
+        },
+        "description": "Number of days that triggers the alert AbandonedApplicationRelease.",
+        "hide": 2,
+        "label": "Abandoned Applications",
+        "name": "alert_abandoned_applications",
+        "query": "90",
+        "skipUrlSync": true,
+        "type": "constant"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": "Prometheus",
+          "value": "prometheus"
+        },
+        "description": "",
+        "label": "Datasource",
+        "name": "datasource",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(kube_inventory_pod_versions_to_latest_release,repo)",
+        "description": "Github Repository of inventoried application",
+        "includeAll": true,
+        "label": "Repo",
+        "multi": true,
+        "name": "repo",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_inventory_pod_versions_to_latest_release,repo)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\"},exported_namespace)",
+        "description": "Namespace of inventoried applications",
+        "includeAll": true,
+        "label": "Namespace",
+        "multi": true,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_inventory_pod_versions_to_latest_release{repo=~\"$repo\"},exported_namespace)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(kube_inventory_pod_versions_to_latest_release{exported_namespace=~\"$namespace\"},name)",
+        "description": "Inventoried Pod",
+        "includeAll": true,
+        "label": "Pod",
+        "multi": true,
+        "name": "pod",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_inventory_pod_versions_to_latest_release{exported_namespace=~\"$namespace\"},name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(kube_inventory_pod_versions_to_latest_release{exported_namespace=~\"$namespace\", name=~\"$pod\"},container_name)",
+        "description": "Inventoried Container",
+        "includeAll": true,
+        "label": "Container",
+        "multi": true,
+        "name": "container",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_inventory_pod_versions_to_latest_release{exported_namespace=~\"$namespace\", name=~\"$pod\"},container_name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "allowCustomValue": false,
+        "current": {
+          "text": [
+            "false"
+          ],
+          "value": [
+            "false"
+          ]
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${datasource}"
+        },
+        "definition": "label_values(kube_inventory_pod_versions_to_latest_release,silenced)",
+        "description": "Silenced application",
+        "includeAll": true,
+        "label": "Silenced",
+        "multi": true,
+        "name": "silenced",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(kube_inventory_pod_versions_to_latest_release,silenced)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "sort": 1,
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "0",
+          "value": "0"
+        },
+        "description": "Number of days to filter a current release.",
+        "label": "Current Release Age",
+        "name": "current_release_age",
+        "options": [
+          {
+            "selected": true,
+            "text": "0",
+            "value": "0"
+          },
+          {
+            "selected": false,
+            "text": "1",
+            "value": "1"
+          },
+          {
+            "selected": false,
+            "text": "2",
+            "value": "2"
+          },
+          {
+            "selected": false,
+            "text": "5",
+            "value": "5"
+          },
+          {
+            "selected": false,
+            "text": "10",
+            "value": "10"
+          },
+          {
+            "selected": false,
+            "text": "15",
+            "value": "15"
+          },
+          {
+            "selected": false,
+            "text": "20",
+            "value": "20"
+          },
+          {
+            "selected": false,
+            "text": "30",
+            "value": "30"
+          },
+          {
+            "selected": false,
+            "text": "60",
+            "value": "60"
+          },
+          {
+            "selected": false,
+            "text": "90",
+            "value": "90"
+          }
+        ],
+        "query": "0,1,2,5,10,15,20,30,60,90",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "text": "0",
+          "value": "0"
+        },
+        "description": "Number of days to filter a latest release.",
+        "label": "Latest Release Age",
+        "name": "latest_release_age",
+        "options": [
+          {
+            "selected": true,
+            "text": "0",
+            "value": "0"
+          },
+          {
+            "selected": false,
+            "text": "1",
+            "value": "1"
+          },
+          {
+            "selected": false,
+            "text": "2",
+            "value": "2"
+          },
+          {
+            "selected": false,
+            "text": "5",
+            "value": "5"
+          },
+          {
+            "selected": false,
+            "text": "10",
+            "value": "10"
+          },
+          {
+            "selected": false,
+            "text": "15",
+            "value": "15"
+          },
+          {
+            "selected": false,
+            "text": "20",
+            "value": "20"
+          },
+          {
+            "selected": false,
+            "text": "30",
+            "value": "30"
+          },
+          {
+            "selected": false,
+            "text": "60",
+            "value": "60"
+          },
+          {
+            "selected": false,
+            "text": "90",
+            "value": "90"
+          }
+        ],
+        "query": "0,1,2,5,10,15,20,30,60,90",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Kube Inventory",
+  "uid": "ad9kbwj",
+  "version": 35
+}

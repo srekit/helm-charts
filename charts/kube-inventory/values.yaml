@@ -1,0 +1,122 @@
+clusterRoles:
+  create: true
+
+container:
+  name: "kube-inventory"
+  portName: "http"
+  portNumber: 8080
+  protocol: "TCP"
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+  readinessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop:
+        - ALL
+
+dashboards:
+  enabled: false
+
+extraApps:
+  fileDirPath: "/app/config"
+  fileName: "extra_apps.yaml"
+  apps: {}
+
+fullnameOverride: ""
+
+github:
+  apiURL: "https://api.github.com"
+  env: "GITHUB_ACCESS_TOKEN"
+  token: ""
+
+image:
+  name: "kube-inventory"
+  pullPolicy: "IfNotPresent"
+  repository: "ghcr.io/srekit"
+  tag: "pr-2-ac3b632"
+
+logLevel: "INFO"
+
+networkPolicy:
+  enabled: true
+
+podMonitor:
+  enabled: false
+  interval: "60s"
+  labels:
+    release: kube-prometheus-stack
+  path: "/metrics"
+  prometheusNamespace: "monitoring"
+  prometheusName: "prometheus"
+  scrapeTimeout: "10s"
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 1000
+
+prometheusRules:
+  enabled: false
+  interval: "30s"
+  rules:
+    - alert: OutdatedKubeInventoryPods
+      expr: kube_inventory_pod_versions_to_latest_release{silenced="false"} > 5
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Application version is greater than 5 versions behind latest release"
+        description: > 
+          "The application {{ $labels.container_name }} in namespace {{ $labels.exported_namespace }} 
+          is {{ $value }} versions behind 
+          (current: {{ $labels.current_release_name }}, latest: {{ $labels.latest_release_name }})"
+    - alert: StaleApplicationRelease
+      expr: |
+        ((time() - kube_inventory_pod_current_release_timestamp{silenced="false"}) > (90 * 24 * 3600))
+        and (
+          (time() - kube_inventory_pod_latest_release_timestamp{silenced="false"}) < (90 * 24 * 3600)
+        )
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Application running a release older than 3 months"
+        description: >
+          "The application {{ $labels.container_name }} in namespace {{ $labels.exported_namespace }} 
+          is running release {{ $labels.current_release_name }} 
+          from {{ $labels.current_release_date }}, which is older than 3 months"
+    - alert: AbandonedApplicationRelease
+      expr: |
+        ((time() - kube_inventory_pod_latest_release_timestamp{silenced="false"}) > (90 * 24 * 3600))
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Application latest release is older than 3 months"
+        description: > 
+          "The application {{ $labels.container_name }} in namespace {{ $labels.exported_namespace }} 
+          has a latest release {{ $labels.latest_release_name }} from {{ $labels.latest_release_date }}, 
+          which is older than 3 months"
+
+refreshIntervalSeconds: 600
+
+replicaCount: 1
+
+resources:
+  limits:
+    memory: "128Mi"
+  requests:
+    cpu: "100m"
+    memory: "128Mi"
+
+serviceAccount:
+  create: true
+  name: ""

@@ -1,0 +1,80 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "general.fullname" . | quote }}
+  namespace: {{ include "general.namespace" . | quote }}
+  labels:
+    {{- include "general.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "general.labels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+      labels:
+        {{- include "general.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "serviceAccount.name" . | quote }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Values.container.name | quote }}
+          args:
+            - "--output-mode=prometheus"
+            - "--log-level={{ .Values.logLevel }}"
+            - "--extra-apps-file-path={{ .Values.extraApps.fileDirPath }}/{{ .Values.extraApps.fileName }}"
+            - "--github-api-url={{ .Values.github.apiURL }}"
+            - "--kube-in-cluster=True"
+            - "--output-refresh-interval-seconds={{ .Values.refreshIntervalSeconds }}"
+            - "--web-port={{ .Values.container.portNumber }}"
+          image: {{ include "image" . | quote }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          securityContext:
+            {{- toYaml .Values.container.securityContext | nindent 12 }}
+          ports:
+            - name: {{ .Values.container.portName | quote}}
+              containerPort: {{ .Values.container.portNumber }}
+              protocol: {{ .Values.container.protocol | quote }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.container.portNumber }}
+            initialDelaySeconds: {{ .Values.container.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.container.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.container.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.container.livenessProbe.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.container.portNumber }}
+            initialDelaySeconds: {{ .Values.container.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.container.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.container.readinessProbe.timeoutSeconds }}
+          env:
+            {{- if .Values.github.token }}
+            - name: {{ .Values.github.env | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "general.fullname" . | quote }}
+                  key: github-token
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.extraApps.apps }}
+            - name: extra-apps-config
+              mountPath: {{ .Values.extraApps.fileDirPath }}
+              readOnly: true
+            {{- end }}
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      volumes:
+        {{- if .Values.extraApps.apps }}
+        - name: extra-apps-config
+          configMap:
+            name: {{ include "general.fullname" . | quote }}
+        {{- end }}
