@@ -1,0 +1,14 @@
+{{- if .Values.extraApps.apps }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "general.fullname" . | quote }}
+  namespace: {{ include "general.namespace" . | quote }}
+  labels:
+    {{- include "general.labels" . | nindent 4 }}
+data:
+  extra_apps.yaml: |
+    apps:
+    {{- toYaml .Values.extraApps.apps | nindent 6 }}
+{{- end }}
