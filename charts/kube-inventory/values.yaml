@@ -41,12 +41,9 @@ image:
   name: "kube-inventory"
   pullPolicy: "IfNotPresent"
   repository: "ghcr.io/srekit"
-  tag: "pr-2-ac3b632"
+  tag: "1.0.1"
 
 logLevel: "INFO"
-
-networkPolicy:
-  enabled: true
 
 podMonitor:
   enabled: false
